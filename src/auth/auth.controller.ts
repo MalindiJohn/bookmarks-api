@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Post} from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { AuthDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -10,21 +11,17 @@ export class AuthController {
 
     //create account endpoint
     @Post('signup')
-    signup(@Body() dto: any){
+    signup(@Body() dto: AuthDto){
 
-        console.log({
-            dto,
-        });
-
-        return this.authService.signup();
+        return this.authService.signup(dto);
 
     }
 
     //login endpoint
     @Post('login')
-    signin(){
+    signin(@Body() dto: AuthDto) {
 
-        return this.authService.login();
+        return this.authService.login(dto);
 
     }
 
