@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { CurrentUser } from 'src/auth/decorator/get-user.decorator';
 import { JwtGuard } from 'src/auth/guard';
@@ -9,10 +9,17 @@ import { JwtGuard } from 'src/auth/guard';
 export class UserController {
 
     @Get('profile')
-    userProfile(@CurrentUser() user: User){
+    userProfile(@CurrentUser() user: User ){
 
-        // console.log({user: req.user});
+        // console.log({email});
 
         return user;
     }
+
+    //edit user
+    @Patch()
+    editUser(){
+        
+    }
+    
 }
