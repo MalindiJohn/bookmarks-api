@@ -10,11 +10,22 @@ export class PrismaService extends PrismaClient {
             datasources: {
                 db: {
                     // url: process.env.DATABASE_URL
-                    url: config.get( 'DATABASE_URL' ),
+                    url: config.get('DATABASE_URL'),
                 },
             }
         });
 
+    }
+
+    //clean database
+    cleanDb() {
+
+        return this.$transaction([
+
+            this.bookmark.deleteMany(),
+            this.user.deleteMany(),
+
+        ])
     }
 
 }
