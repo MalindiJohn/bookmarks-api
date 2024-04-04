@@ -4,6 +4,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { AuthDto } from 'src/auth/dto';
+import { EditUserDto } from 'src/user/dto';
+import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
 
@@ -67,28 +69,31 @@ describe('App e2e', () => {
       it("Should throw error when email is empty", async () => {
 
         return pactum.spec().post('/auth/signup')
-          .withBody({ ...dto, email: '' }).expectStatus(400)
+          .withBody({ ...dto, email: '' })
+          .expectStatus(400)
       })
 
       //should throw an exception if password empty
       it("Should throw error when password is empty", async () => {
 
         return pactum.spec().post('/auth/signup')
-          .withBody({ ...dto, password: '' }).expectStatus(400)
+          .withBody({ ...dto, password: '' })
+          .expectStatus(400)
       })
 
       //should throw an exception if no body
       it("Should throw error when no body provided", async () => {
 
-        return pactum.spec().post('/auth/signup').expectStatus(400)
+        return pactum.spec().post('/auth/signup')
+          .expectStatus(400)
       })
 
 
       it('Should sign up a user with valid credentials', () => {
 
-        return pactum.spec().
-          post('/auth/signup').
-          withBody(dto).expectStatus(201);
+        return pactum.spec()
+          .post('/auth/signup')
+          .withBody(dto).expectStatus(201);
       });
     })
 
@@ -99,26 +104,31 @@ describe('App e2e', () => {
       it("Should throw error when email is empty", async () => {
 
         return pactum.spec().post('/auth/login')
-          .withBody({ ...dto, email: '' }).expectStatus(400)
+          .withBody({ ...dto, email: '' })
+          .expectStatus(400)
       })
 
       //should throw an exception if password empty
       it("Should throw error when password is empty", async () => {
 
         return pactum.spec().post('/auth/login')
-          .withBody({ ...dto, password: '' }).expectStatus(400)
+          .withBody({ ...dto, password: '' })
+          .expectStatus(400)
       })
 
       //should throw an exception if no body
       it("Should throw error when no body provided", async () => {
 
-        return pactum.spec().post('/auth/login').expectStatus(400)
+        return pactum.spec().post('/auth/login')
+          .expectStatus(400)
       })
 
       it('Should return an access token if user signs in correctly', () => {
 
         return pactum.spec().post('/auth/login')
-          .withBody(dto).expectStatus(200).stores('userAt', 'access_token');
+          .withBody(dto)
+          .expectStatus(200)
+          .stores('userAt', 'access_token');
       });
     })
   });
@@ -140,34 +150,132 @@ describe('App e2e', () => {
     //edit user
     describe('Edit user', () => {
 
+      //user dto
+      const dto: EditUserDto = {
+        firstName: "Malindi",
+        email: "malindi.john@gmail.com"
+      }
+
+      it('Should edit user', () => {
+
+        return pactum.spec().patch('/users')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.email)
+      })
+
     })
   })
 
   //tests for bookmarks module
   describe("Bookmarks", () => {
 
+    //get empty bookmarks
+    describe("Get empty Bookmarks", () => {
+
+      it("Should get bookmarks", () => {
+
+        return pactum.spec().get('/bookmarks')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .expectStatus(200)
+          .expectBody([])
+
+      })
+    })
+
     //create bookmark
     describe('Create bookmark', () => {
+
+      const dto: CreateBookmarkDto = {
+        title: 'Google',
+        link: 'https://www.google.com'
+      };
+
+      it('Should create a bookmark', () => {
+
+        return pactum.spec().post('/bookmarks')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .withBody(dto)
+          .expectStatus(201)
+          .stores('bookmarkId', 'id')
+
+      })
 
     })
 
     //get bookmarks
     describe('Get bookmarks', () => {
 
+      it("Should get bookmarks", () => {
+
+        return pactum.spec().get('/bookmarks')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .expectStatus(200)
+          .expectJsonLength(1)
+
+      })
+
     })
 
     //get bookmark by id
     describe('Get bookmark by id', () => {
+
+      it("Should get bookmark by id", () => {
+
+        return pactum.spec().get('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .expectStatus(200)
+          .expectBodyContains('$S{bookmarkId}')
+
+      })
 
     })
 
     //edit bookmark
     describe('Edit bookmark by id', () => {
 
+      const dto: EditBookmarkDto = {
+        title: 'The Famous Search Engine',
+        description: 'Google is the most used and the most used search engine in the globe',
+      };
+
+      it('Should edit bookmark by id', () => {
+
+        return pactum.spec().patch('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.description)
+
+      })
+
     })
 
     //create bookmark
     describe('Delete bookmark by id', () => {
+
+      it('Should delete bookmark by id', () => {
+
+        return pactum.spec().delete('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .expectStatus(204)
+
+      })
+
+      it('Should get empty bookmarks', () => {
+
+        return pactum.spec().get('/bookmarks')
+          .withHeaders({ Authorization: `Bearer $S{userAt}`, })
+          .expectStatus(200)
+          .expectJsonLength(0)
+
+      })
 
     })
 
