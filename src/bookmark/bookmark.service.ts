@@ -102,5 +102,11 @@ export class BookmarkService {
                 id: bookmarkId
             }
         })
+
+        const response = {
+            "message": `The bookmark was successfully deleted`,
+        };
+
+        return response;
     }
 }

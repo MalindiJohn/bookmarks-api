@@ -16,6 +16,8 @@
     "db:test:up": "docker compose up test-db -d",
     "db:test:restart": "pnpm db:test:rm && pnpm db:test:up && sleep 1 && pnpm prisma:test:deploy",
 
+    "prisma:local:dev:deploy": "prisma migrate deploy",
+
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -36,6 +38,7 @@
     "@nestjs/config": "^3.2.1",
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
+    "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.11.0",
