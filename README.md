@@ -51,5 +51,7 @@ If you would like to change anything in the project:
 1. `Fork the repo`
 2. `Do your magic`
 3. `Create a pull request`
-4. And leave the rest to me, I'll take care of it. 
+4. And leave the rest to me, I'll take care of it.
 
+## Resources
+- https://www.youtube.com/watch?v=GHTA143_b-s&t=11112s
